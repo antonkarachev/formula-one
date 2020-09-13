@@ -13,7 +13,6 @@ public class ViewCreatorImpl implements ViewCreator {
     private static final String NAME_FORMAT = "%-18s|";
     private static final String TEAM_FORMAT = "%-27s|";
     private static final String TIME_FORMAT = "%02d:%02d.%03d";
-    private static int LINE_LENGTH = 0;
 
     @Override
     public String createView(Map<Integer, Racer> racersToPlace) {
@@ -23,9 +22,9 @@ public class ViewCreatorImpl implements ViewCreator {
         view.append(NEW_LINE)
                 .append(firstStepViewMaker(racersToPlace));
 
-        LINE_LENGTH = view.toString().split(NEW_LINE)[1].length();
+        int lineLength = view.toString().split(NEW_LINE)[1].length();
 
-        view.append(signInserter(HORIZONTAL_LINE, LINE_LENGTH))
+        view.append(lineCreator(lineLength))
                 .append(secondStepViewMaker(racersToPlace));
 
         return view.toString();
@@ -75,11 +74,11 @@ public class ViewCreatorImpl implements ViewCreator {
         return String.format(TIME_FORMAT, minutes, seconds, millis);
     }
 
-    private String signInserter(String whatInsert, int quantity) {
+    private String lineCreator(int quantity) {
         StringBuilder insertion = new StringBuilder();
 
         for (int i = 0; i < quantity; i++) {
-            insertion.append(whatInsert);
+            insertion.append(HORIZONTAL_LINE);
         }
         insertion.append(NEW_LINE);
 

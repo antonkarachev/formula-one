@@ -8,10 +8,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import ru.karachev.formulaone.creator.BestLapCreatorImpl;
 import ru.karachev.formulaone.creator.RaceCreatorImpl;
 import ru.karachev.formulaone.creator.ViewCreatorImpl;
-import ru.karachev.formulaone.domain.AbbreviationDecryptorImpl;
+import ru.karachev.formulaone.decryptor.AbbreviationDecryptorImpl;
 import ru.karachev.formulaone.domain.Racer;
-import ru.karachev.formulaone.domain.RacerImpl;
-import ru.karachev.formulaone.domain.StreamMakerImpl;
+import ru.karachev.formulaone.domain.StreamMaker;
 
 import java.time.Duration;
 import java.time.LocalTime;
@@ -24,6 +23,8 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -33,7 +34,7 @@ class ReportMakerTest {
     private ReportMaker reportMaker;
 
     @Mock
-    private StreamMakerImpl mockedStreamMaker;
+    private StreamMaker mockedStreamMaker;
 
     @Mock
     private AbbreviationDecryptorImpl mockedAbbreviationDecryptor;
@@ -71,10 +72,10 @@ class ReportMakerTest {
         abbreviationToNameAndTeam.put("BBB", "Donny_Not a best team");
         abbreviationToNameAndTeam.put("CCC", "Johny_Worst Team");
 
-        LocalTime startTimeAAA = LocalTime.of(12, 00, 00, 0);
-        LocalTime startTimeBBB = LocalTime.of(12, 10, 00, 0);
-        LocalTime startTimeCCC = LocalTime.of(12, 15, 00, 0);
-        LocalTime endTimeAAA = LocalTime.of(12, 01, 11, 111000000);
+        LocalTime startTimeAAA = LocalTime.of(12, 0, 0, 0);
+        LocalTime startTimeBBB = LocalTime.of(12, 10, 0, 0);
+        LocalTime startTimeCCC = LocalTime.of(12, 15, 0, 0);
+        LocalTime endTimeAAA = LocalTime.of(12, 1, 11, 111000000);
         LocalTime endTimeBBB = LocalTime.of(12, 12, 22, 222000000);
         LocalTime endTimeCCC = LocalTime.of(12, 18, 33, 333000000);
 
@@ -83,16 +84,11 @@ class ReportMakerTest {
         abbreviationToBestLapTime.put("BBB", Duration.between(startTimeBBB, endTimeBBB));
         abbreviationToBestLapTime.put("CCC", Duration.between(startTimeCCC, endTimeCCC));
 
-        Map<String, Duration> bestLapTime = new HashMap<>();
-        bestLapTime.put("AAA", Duration.between(startTimeAAA, endTimeAAA));
-        bestLapTime.put("BBB", Duration.between(startTimeBBB, endTimeBBB));
-        bestLapTime.put("CCC", Duration.between(startTimeCCC, endTimeCCC));
-
-        Racer racer1 = new RacerImpl("AAA", "Anton",
+        Racer racer1 = new Racer("AAA", "Anton",
                 "Best Team", Duration.between(startTimeAAA, endTimeAAA));
-        Racer racer2 = new RacerImpl("BBB", "Donny",
+        Racer racer2 = new Racer("BBB", "Donny",
                 "Not a best team", Duration.between(startTimeBBB, endTimeBBB));
-        Racer racer3 = new RacerImpl("CCC", "Johny",
+        Racer racer3 = new Racer("CCC", "Johny",
                 "Worst Team", Duration.between(startTimeCCC, endTimeCCC));
 
         Map<Integer, Racer> racersSortedByTime = new HashMap<>();
@@ -112,9 +108,9 @@ class ReportMakerTest {
                 .thenReturn(abbreviationStream)
                 .thenReturn(startTimeDataStream)
                 .thenReturn(endTimeDataStream);
-        when(mockedAbbreviationDecryptor.decryptAbbreviation(any(Stream.class)))
+        when(mockedAbbreviationDecryptor.decryptAbbreviation(any()))
                 .thenReturn(abbreviationToNameAndTeam);
-        when(mockedBestLapCounter.countBestLap(startTimeDataStream, endTimeDataStream))
+        when(mockedBestLapCounter.countBestLap(any(), any()))
                 .thenReturn(abbreviationToBestLapTime);
         when(mockedRaceCreator.createRace(anyMap(), anyMap())).thenReturn(racersSortedByTime);
         when(mockedViewCreator.createView(anyMap())).thenReturn(expected);
@@ -122,5 +118,12 @@ class ReportMakerTest {
         String actual = reportMaker.makeReport(startLog, endLog, abbreviationsTxt);
 
         assertThat(actual, is(expected));
+
+        verify(mockedStreamMaker, times(3)).makeStreamFromFile(anyString());
+        verify(mockedAbbreviationDecryptor).decryptAbbreviation(any());
+        verify(mockedBestLapCounter).countBestLap(any(),any());
+        verify(mockedRaceCreator).createRace(anyMap(),anyMap());
+        verify(mockedViewCreator).createView(anyMap());
+
     }
 }

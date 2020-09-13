@@ -1,4 +1,4 @@
-package ru.karachev.formulaone.domain;
+package ru.karachev.formulaone.decryptor;
 
 import java.util.HashMap;
 import java.util.stream.Stream;

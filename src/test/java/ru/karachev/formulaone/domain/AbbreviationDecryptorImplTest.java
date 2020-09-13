@@ -1,6 +1,8 @@
 package ru.karachev.formulaone.domain;
 
 import org.junit.jupiter.api.Test;
+import ru.karachev.formulaone.decryptor.AbbreviationDecryptor;
+import ru.karachev.formulaone.decryptor.AbbreviationDecryptorImpl;
 
 import java.util.HashMap;
 import java.util.Map;

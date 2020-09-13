@@ -1,7 +1,6 @@
 package ru.karachev.formulaone.creator;
 
 import ru.karachev.formulaone.domain.Racer;
-import ru.karachev.formulaone.domain.RacerImpl;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -13,7 +12,7 @@ import java.util.stream.Collectors;
 
 public class RaceCreatorImpl implements RaceCreator {
 
-    private final static String UNDERSCORE = "_";
+    private static final String UNDERSCORE = "_";
 
     @Override
     public Map<Integer, Racer> createRace(Map<String, String> decryptedAbbreviation,
@@ -21,29 +20,29 @@ public class RaceCreatorImpl implements RaceCreator {
 
         Map<String, Racer> abbreviationToRacer = decryptedAbbreviation.entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey,
-                        x -> new RacerImpl(
+                        x -> new Racer(
                                 x.getKey(),
                                 getNameFromAbb(decryptedAbbreviation, x.getKey()),
                                 getTeamNameFromAbb(decryptedAbbreviation, x.getKey()),
                                 bestLapTime.get(x.getKey()))));
 
-        List <Racer> racersSortedByTime = new ArrayList<>(abbreviationToRacer.values());
+        List<Racer> racersSortedByTime = new ArrayList<>(abbreviationToRacer.values());
         racersSortedByTime.sort(Comparator.comparing(Racer::getBestLapTime));
 
         return racersSortedByTime
                 .stream()
                 .collect(LinkedHashMap::new,
-                        (map, racer) -> map.put(map.size()+1, racer),
+                        (map, racer) -> map.put(map.size() + 1, racer),
                         (map, map2) -> {
                         });
     }
 
-    public String getNameFromAbb(Map<String, String> decryptedAbbreviation ,
+    public String getNameFromAbb(Map<String, String> decryptedAbbreviation,
                                  String abbreviation) {
         return decryptedAbbreviation.get(abbreviation).split(UNDERSCORE)[0];
     }
 
-    public String getTeamNameFromAbb(Map<String, String> decryptedAbbreviation ,
+    public String getTeamNameFromAbb(Map<String, String> decryptedAbbreviation,
                                      String abbreviation) {
         return decryptedAbbreviation.get(abbreviation).split(UNDERSCORE)[1];
     }

@@ -1,25 +1,31 @@
 package ru.karachev.formulaone;
 
 import ru.karachev.formulaone.creator.BestLapCreator;
-import ru.karachev.formulaone.creator.BestLapCreatorImpl;
 import ru.karachev.formulaone.creator.RaceCreator;
-import ru.karachev.formulaone.creator.RaceCreatorImpl;
 import ru.karachev.formulaone.creator.ViewCreator;
-import ru.karachev.formulaone.creator.ViewCreatorImpl;
-import ru.karachev.formulaone.domain.AbbreviationDecryptorImpl;
+import ru.karachev.formulaone.decryptor.AbbreviationDecryptor;
 import ru.karachev.formulaone.domain.Racer;
-import ru.karachev.formulaone.domain.StreamMakerImpl;
+import ru.karachev.formulaone.domain.StreamMaker;
 
 import java.time.Duration;
 import java.util.Map;
 
 public class ReportMaker {
 
-    private final StreamMakerImpl streamMaker = new StreamMakerImpl();
-    private final AbbreviationDecryptorImpl abbreviationDecryptor = new AbbreviationDecryptorImpl();
-    private final BestLapCreator bestLapCreator = new BestLapCreatorImpl();
-    private final RaceCreator raceCreator = new RaceCreatorImpl();
-    private final ViewCreator viewCreator = new ViewCreatorImpl();
+    private final StreamMaker streamMaker;
+    private final AbbreviationDecryptor abbreviationDecryptor;
+    private final BestLapCreator bestLapCreator;
+    private final RaceCreator raceCreator;
+    private final ViewCreator viewCreator;
+
+    public ReportMaker(StreamMaker streamMaker, AbbreviationDecryptor abbreviationDecryptor,
+                       BestLapCreator bestLapCreator, RaceCreator raceCreator, ViewCreator viewCreator) {
+        this.streamMaker = streamMaker;
+        this.abbreviationDecryptor = abbreviationDecryptor;
+        this.bestLapCreator = bestLapCreator;
+        this.raceCreator = raceCreator;
+        this.viewCreator = viewCreator;
+    }
 
     public String makeReport(String startLog, String endLog, String abbreviationsTxt) {
 

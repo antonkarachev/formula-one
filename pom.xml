@@ -55,6 +55,8 @@
                 <configuration>
                     <excludes>
                         <exclude>**/*FormulaOneApplication.class</exclude>
+                        <exclude>**/*Racer.class</exclude>
+                        <exclude>**/*StreamMaker.class</exclude>
                     </excludes>
                 </configuration>
                 <executions>

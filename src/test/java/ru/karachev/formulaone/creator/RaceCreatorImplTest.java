@@ -2,7 +2,6 @@ package ru.karachev.formulaone.creator;
 
 import org.junit.jupiter.api.Test;
 import ru.karachev.formulaone.domain.Racer;
-import ru.karachev.formulaone.domain.RacerImpl;
 
 import java.time.Duration;
 import java.time.LocalTime;
@@ -26,11 +25,11 @@ class RaceCreatorImplTest {
         LocalTime endTimeBBB = LocalTime.of(12, 12, 22, 222000000);
         LocalTime endTimeCCC = LocalTime.of(12, 18, 33, 333000000);
 
-        Racer racer1 = new RacerImpl("AAA", "Anton",
+        Racer racer1 = new Racer("AAA", "Anton",
                 "Best Team", Duration.between(startTimeAAA, endTimeAAA));
-        Racer racer2 = new RacerImpl("BBB", "Donny",
+        Racer racer2 = new Racer("BBB", "Donny",
                 "Not a best team", Duration.between(startTimeBBB, endTimeBBB));
-        Racer racer3 = new RacerImpl("CCC", "Johny",
+        Racer racer3 = new Racer("CCC", "Johny",
                 "Worst Team", Duration.between(startTimeCCC, endTimeCCC));
 
         Map<Integer, Racer> expected = new HashMap<>();
