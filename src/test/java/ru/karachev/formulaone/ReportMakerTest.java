@@ -5,26 +5,33 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import ru.karachev.formulaone.creator.BestLapCreatorImpl;
-import ru.karachev.formulaone.creator.RaceCreatorImpl;
-import ru.karachev.formulaone.creator.ViewCreatorImpl;
-import ru.karachev.formulaone.decryptor.AbbreviationDecryptorImpl;
+import ru.karachev.formulaone.creator.BestLapCreator;
+import ru.karachev.formulaone.creator.RaceCreator;
+import ru.karachev.formulaone.creator.ViewCreator;
+import ru.karachev.formulaone.decryptor.AbbreviationDecryptor;
+import ru.karachev.formulaone.domain.FileReader;
+import ru.karachev.formulaone.domain.DataRepository;
 import ru.karachev.formulaone.domain.Racer;
-import ru.karachev.formulaone.domain.StreamMaker;
+import ru.karachev.formulaone.validator.Validator;
 
 import java.time.Duration;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.stream.Stream;
+import java.util.List;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -34,19 +41,22 @@ class ReportMakerTest {
     private ReportMaker reportMaker;
 
     @Mock
-    private StreamMaker mockedStreamMaker;
+    Validator mockedValidator;
 
     @Mock
-    private AbbreviationDecryptorImpl mockedAbbreviationDecryptor;
+    private FileReader mockedFileReader;
 
     @Mock
-    private BestLapCreatorImpl mockedBestLapCounter;
+    private AbbreviationDecryptor mockedAbbreviationDecryptor;
 
     @Mock
-    private RaceCreatorImpl mockedRaceCreator;
+    private BestLapCreator mockedBestLapCounter;
 
     @Mock
-    private ViewCreatorImpl mockedViewCreator;
+    private RaceCreator mockedRaceCreator;
+
+    @Mock
+    private ViewCreator mockedViewCreator;
 
     @Test
     void makeReportShouldReturnStringWhenGetPathsInStringOfStartAndEndLogAndAbbreviationTxt() {
@@ -54,18 +64,29 @@ class ReportMakerTest {
         String startLog = "start.log";
         String endLog = ".end.log";
         String abbreviationsTxt = "abbreviations.txt";
+        int numberOfPrizes = 3;
 
-        Stream<String> abbreviationStream = Stream.of("AAA_Anton_Best Team",
-                "BBB_Donny_Not a best team",
-                "CCC_Johny_Worst Team");
+        DataRepository dataRepository = DataRepository.newBuilder()
+                .withStartLogFilePath(startLog)
+                .withEndLogFilePath(endLog)
+                .withAbbreviationsTxtFilePath(abbreviationsTxt)
+                .withNumberOfPrizes(numberOfPrizes)
+                .build();
 
-        Stream<String> startTimeDataStream = Stream.of("AAA2018-05-24_12:00:00.000",
-                "BBB2018-05-24_12:10:00.000",
-                "CCC2018-05-24_12:15:00.000");
+        List<String> abbreviationData = new ArrayList<>();
+        abbreviationData.add("AAA_Anton_Best Team");
+        abbreviationData.add("BBB_Donny_Not a best team");
+        abbreviationData.add("CCC_Johny_Worst Team");
 
-        Stream<String> endTimeDataStream = Stream.of("AAA2018-05-24_12:01:11.111",
-                "BBB2018-05-24_12:12:22.222",
-                "CCC2018-05-24_12:18:33.333");
+        List<String> startTimeData = new ArrayList<>();
+        startTimeData.add("AAA2018-05-24_12:00:00.000");
+        startTimeData.add("BBB2018-05-24_12:10:00.000");
+        startTimeData.add("CCC2018-05-24_12:15:00.000");
+
+        List<String> endTimeData = new ArrayList<>();
+        endTimeData.add("AAA2018-05-24_12:01:11.111");
+        endTimeData.add("BBB2018-05-24_12:12:22.222");
+        endTimeData.add("CCC2018-05-24_12:18:33.333");
 
         HashMap<String, String> abbreviationToNameAndTeam = new HashMap<>();
         abbreviationToNameAndTeam.put("AAA", "Anton_Best Team");
@@ -84,46 +105,77 @@ class ReportMakerTest {
         abbreviationToBestLapTime.put("BBB", Duration.between(startTimeBBB, endTimeBBB));
         abbreviationToBestLapTime.put("CCC", Duration.between(startTimeCCC, endTimeCCC));
 
-        Racer racer1 = new Racer("AAA", "Anton",
-                "Best Team", Duration.between(startTimeAAA, endTimeAAA));
-        Racer racer2 = new Racer("BBB", "Donny",
-                "Not a best team", Duration.between(startTimeBBB, endTimeBBB));
-        Racer racer3 = new Racer("CCC", "Johny",
-                "Worst Team", Duration.between(startTimeCCC, endTimeCCC));
+        Racer racer1 = Racer.newBuilder()
+                .withAbbreviation("AAA")
+                .withName("Anton")
+                .withTeamName("Best Team")
+                .withBestLapTime(Duration.between(startTimeAAA, endTimeAAA))
+                .build();
+        Racer racer2 = Racer.newBuilder()
+                .withAbbreviation("BBB")
+                .withName("Donny")
+                .withTeamName("Not a best team")
+                .withBestLapTime(Duration.between(startTimeBBB, endTimeBBB))
+                .build();
+        Racer racer3 = Racer.newBuilder()
+                .withAbbreviation("CCC")
+                .withName("Johny")
+                .withTeamName("Worst Team")
+                .withBestLapTime(Duration.between(startTimeCCC, endTimeCCC))
+                .build();
 
-        Map<Integer, Racer> racersSortedByTime = new HashMap<>();
-        racersSortedByTime.put(1, racer1);
-        racersSortedByTime.put(2, racer2);
-        racersSortedByTime.put(3, racer3);
+        List<Racer> placesToRacer = new ArrayList<>();
+        placesToRacer.add(racer1);
+        placesToRacer.add(racer2);
+        placesToRacer.add(racer3);
 
         StringBuilder expectedView = new StringBuilder();
         String expected = expectedView.append(String.format
                 ("\n%02d. %-18s|%-27s|%02d:%02d.%03d\n", 1, "Anton", "Best Team", 1, 11, 111))
                 .append(String.format("%02d. %-18s|%-27s|%02d:%02d.%03d\n", 2, "Donny", "Not a best team", 2, 22, 222))
                 .append(String.format("%02d. %-18s|%-27s|%02d:%02d.%03d\n", 3, "Johny", "Worst Team", 3, 33, 333))
-                .append("------------------------------------------------------------\n")
                 .toString();
 
-        when(mockedStreamMaker.makeStreamFromFile(anyString()))
-                .thenReturn(abbreviationStream)
-                .thenReturn(startTimeDataStream)
-                .thenReturn(endTimeDataStream);
-        when(mockedAbbreviationDecryptor.decryptAbbreviation(any()))
+        doNothing().when(mockedValidator).validate(anyString());
+        when(mockedFileReader.readFile(anyString()))
+                .thenReturn(abbreviationData)
+                .thenReturn(startTimeData)
+                .thenReturn(endTimeData);
+        when(mockedAbbreviationDecryptor.decryptAbbreviation(anyList()))
                 .thenReturn(abbreviationToNameAndTeam);
-        when(mockedBestLapCounter.countBestLap(any(), any()))
+        when(mockedBestLapCounter.countBestLap(anyList(), anyList()))
                 .thenReturn(abbreviationToBestLapTime);
-        when(mockedRaceCreator.createRace(anyMap(), anyMap())).thenReturn(racersSortedByTime);
-        when(mockedViewCreator.createView(anyMap())).thenReturn(expected);
+        when(mockedRaceCreator.createRace(anyMap(), anyMap())).thenReturn(placesToRacer);
+        when(mockedViewCreator.createView(anyList(), anyInt())).thenReturn(expected);
 
-        String actual = reportMaker.makeReport(startLog, endLog, abbreviationsTxt);
+        String actual = reportMaker.makeReport(dataRepository);
 
-        assertThat(actual, is(expected));
+        assertThat(actual).isEqualTo(expected);
 
-        verify(mockedStreamMaker, times(3)).makeStreamFromFile(anyString());
+        verify(mockedFileReader, times(3)).readFile(anyString());
         verify(mockedAbbreviationDecryptor).decryptAbbreviation(any());
-        verify(mockedBestLapCounter).countBestLap(any(),any());
-        verify(mockedRaceCreator).createRace(anyMap(),anyMap());
-        verify(mockedViewCreator).createView(anyMap());
+        verify(mockedBestLapCounter).countBestLap(any(), any());
+        verify(mockedRaceCreator).createRace(anyMap(), anyMap());
+        verify(mockedViewCreator).createView(anyList(), anyInt());
+    }
 
+    @Test
+    void makeReportShouldThrowExceptionWhenGetNotValidFilePath() {
+        String startLog = "start.log";
+        String endLog = ".end.log";
+        String abbreviationsTxt = "abbreviations.txt";
+        int numberOfPrizes = 3;
+
+        DataRepository dataRepository = DataRepository.newBuilder()
+                .withStartLogFilePath(startLog)
+                .withEndLogFilePath(endLog)
+                .withAbbreviationsTxtFilePath(abbreviationsTxt)
+                .withNumberOfPrizes(numberOfPrizes)
+                .build();
+        doThrow(new IllegalArgumentException()).when(mockedValidator).validate(anyString());
+        assertThrows(IllegalArgumentException.class, () ->
+                reportMaker.makeReport(dataRepository));
+        verifyZeroInteractions(mockedFileReader, mockedAbbreviationDecryptor, mockedBestLapCounter,
+                mockedRaceCreator, mockedViewCreator);
     }
 }

@@ -8,25 +8,38 @@ import ru.karachev.formulaone.creator.ViewCreator;
 import ru.karachev.formulaone.creator.ViewCreatorImpl;
 import ru.karachev.formulaone.decryptor.AbbreviationDecryptor;
 import ru.karachev.formulaone.decryptor.AbbreviationDecryptorImpl;
-import ru.karachev.formulaone.domain.StreamMaker;
+import ru.karachev.formulaone.domain.FileReader;
+import ru.karachev.formulaone.domain.DataRepository;
+import ru.karachev.formulaone.validator.Validator;
+import ru.karachev.formulaone.validator.ValidatorImpl;
 
 public class FormulaOneApplication {
 
     public static void main(String[] args) {
 
-        StreamMaker streamMaker = new StreamMaker();
-        AbbreviationDecryptor abbreviationDecryptor = new AbbreviationDecryptorImpl();
-        BestLapCreator bestLapCreator = new BestLapCreatorImpl();
-        RaceCreator raceCreator = new RaceCreatorImpl();
-        ViewCreator viewCreator = new ViewCreatorImpl();
-
-        ReportMaker reportMaker = new ReportMaker(streamMaker, abbreviationDecryptor,
-                bestLapCreator, raceCreator, viewCreator);
+        int numberOfPrizes = 15;
         String startLog = "./src/main/resources/start.log";
         String endLog = "./src/main/resources/end.log";
         String abbreviationsTxt = "./src/main/resources/abbreviations.txt";
 
-        System.out.println(reportMaker.makeReport(startLog, endLog, abbreviationsTxt));
+        Validator validator = new ValidatorImpl();
+        FileReader fileReader = new FileReader();
+        AbbreviationDecryptor abbreviationDecryptor = new AbbreviationDecryptorImpl();
+        BestLapCreator bestLapCreator = new BestLapCreatorImpl();
+        RaceCreator raceCreator = new RaceCreatorImpl();
+        ViewCreator viewCreator = new ViewCreatorImpl();
+        DataRepository dataRepository = DataRepository.newBuilder()
+                .withStartLogFilePath(startLog)
+                .withEndLogFilePath(endLog)
+                .withAbbreviationsTxtFilePath(abbreviationsTxt)
+                .withNumberOfPrizes(numberOfPrizes)
+                .build();
+
+        ReportMaker reportMaker = new ReportMaker(validator, fileReader, abbreviationDecryptor,
+                bestLapCreator, raceCreator, viewCreator);
+
+
+        System.out.println(reportMaker.makeReport(dataRepository));
 
     }
 }

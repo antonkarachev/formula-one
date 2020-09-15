@@ -4,42 +4,62 @@ import ru.karachev.formulaone.creator.BestLapCreator;
 import ru.karachev.formulaone.creator.RaceCreator;
 import ru.karachev.formulaone.creator.ViewCreator;
 import ru.karachev.formulaone.decryptor.AbbreviationDecryptor;
+import ru.karachev.formulaone.domain.DataRepository;
+import ru.karachev.formulaone.domain.FileReader;
 import ru.karachev.formulaone.domain.Racer;
-import ru.karachev.formulaone.domain.StreamMaker;
+import ru.karachev.formulaone.validator.Validator;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.Map;
 
 public class ReportMaker {
 
-    private final StreamMaker streamMaker;
+    private final Validator validator;
+    private final FileReader fileReader;
     private final AbbreviationDecryptor abbreviationDecryptor;
     private final BestLapCreator bestLapCreator;
     private final RaceCreator raceCreator;
     private final ViewCreator viewCreator;
 
-    public ReportMaker(StreamMaker streamMaker, AbbreviationDecryptor abbreviationDecryptor,
-                       BestLapCreator bestLapCreator, RaceCreator raceCreator, ViewCreator viewCreator) {
-        this.streamMaker = streamMaker;
+    public ReportMaker(Validator validator, FileReader fileReader,
+                       AbbreviationDecryptor abbreviationDecryptor,
+                       BestLapCreator bestLapCreator, RaceCreator raceCreator,
+                       ViewCreator viewCreator) {
+        this.validator = validator;
+        this.fileReader = fileReader;
         this.abbreviationDecryptor = abbreviationDecryptor;
         this.bestLapCreator = bestLapCreator;
         this.raceCreator = raceCreator;
         this.viewCreator = viewCreator;
     }
 
-    public String makeReport(String startLog, String endLog, String abbreviationsTxt) {
+    public String makeReport(DataRepository dataRepository) {
 
-        Map<String, String> decryptedAbbreviation =
-                abbreviationDecryptor.decryptAbbreviation(streamMaker.makeStreamFromFile(abbreviationsTxt));
+        String startLog = dataRepository.getStartLogFilePath();
+        String endLog = dataRepository.getEndLogFilePath();
+        String abbreviationsTxt = dataRepository.getAbbreviationsTxtFilePath();
+        int numberOfPrizes = dataRepository.getNumberOfPrizes();
+
+        validator.validate(startLog);
+        validator.validate(endLog);
+        validator.validate(abbreviationsTxt);
+        validator.validate(numberOfPrizes);
+
+        List<String> dataFromStartLog = fileReader.readFile(startLog);
+        List<String> dataFromEndLog = fileReader.readFile(endLog);
+        List<String> dataFromAbbreviationsTxt = fileReader.readFile(abbreviationsTxt);
+
+        Map<String, String> abbreviationToNameAndTeam =
+                abbreviationDecryptor.decryptAbbreviation(dataFromAbbreviationsTxt);
 
         Map<String, Duration> abbreviationToBestLapTime =
-                bestLapCreator.countBestLap(streamMaker.makeStreamFromFile(startLog),
-                        streamMaker.makeStreamFromFile(endLog));
+                bestLapCreator.countBestLap(dataFromStartLog, dataFromEndLog);
 
-        Map<Integer, Racer> racersSortedByTime = raceCreator.createRace(decryptedAbbreviation,
+        List<Racer> racerSortedByPlace = raceCreator.createRace(abbreviationToNameAndTeam,
                 abbreviationToBestLapTime);
 
-        return viewCreator.createView(racersSortedByTime);
+        return viewCreator.createView(racerSortedByPlace, numberOfPrizes);
     }
 
 }

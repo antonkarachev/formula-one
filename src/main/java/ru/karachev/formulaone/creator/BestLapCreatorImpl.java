@@ -3,43 +3,34 @@ package ru.karachev.formulaone.creator;
 import java.time.Duration;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class BestLapCreatorImpl implements BestLapCreator {
 
     private static final String SEPARATOR = "_";
-    private static final DateTimeFormatter dateFormat = DateTimeFormatter.ISO_TIME;
+    private static final int ABBREVIATION_STARTS_AT = 0;
+    private static final int ABBREVIATION_ENDS_AT = 3;
+    private static final int TIME_PLACE_IN_LINE = 1;
+    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ISO_TIME;
 
     @Override
-    public Map<String, Duration> countBestLap(Stream<String> startTimeDataStream, Stream<String> endTimeDataStream) {
-        Map<String, LocalTime> startTimesToAbbreviation = readStartTimesFromLog(startTimeDataStream);
-        Map<String, LocalTime> endTimesToAbbreviation = readEndTimesFromLog(endTimeDataStream);
+    public Map<String, Duration> countBestLap(List<String> startTimesData, List<String> endTimesData) {
+        Map<String, LocalTime> startTimesToAbbreviation = readTimesFromData(startTimesData);
+        Map<String, LocalTime> endTimesToAbbreviation = readTimesFromData(endTimesData);
 
         return startTimesToAbbreviation.entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey,
                         x -> Duration.between(x.getValue(), endTimesToAbbreviation.get(x.getKey()))));
     }
 
-    private Map<String, LocalTime> readStartTimesFromLog(Stream<String> startTimesData) {
-        HashMap<String, LocalTime> startTimesToAbbreviation = new HashMap<>();
+    private Map<String, LocalTime> readTimesFromData(List<String> timesData) {
 
-        startTimesData.forEach(line ->
-                startTimesToAbbreviation.put(line.substring(0, 3),
-                        LocalTime.parse(line.split(SEPARATOR)[1], dateFormat)));
-
-        return startTimesToAbbreviation;
-    }
-
-    private Map<String, LocalTime> readEndTimesFromLog(Stream<String> endTimesData) {
-        HashMap<String, LocalTime> endTimesToAbbreviation = new HashMap<>();
-
-        endTimesData.forEach(line ->
-                endTimesToAbbreviation.put(line.substring(0, 3),
-                        LocalTime.parse(line.split(SEPARATOR)[1], dateFormat)));
-
-        return endTimesToAbbreviation;
+        return timesData.stream().collect(Collectors.toMap(
+                x -> x.substring(ABBREVIATION_STARTS_AT,
+                        ABBREVIATION_ENDS_AT),
+                x -> LocalTime.parse(x.split(SEPARATOR)[TIME_PLACE_IN_LINE],
+                        DATE_FORMAT)));
     }
 }

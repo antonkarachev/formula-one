@@ -4,12 +4,12 @@ import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class BestLapCreatorImplTest {
 
@@ -18,13 +18,15 @@ class BestLapCreatorImplTest {
     @Test
     void countBestLapShouldReturnMapAbbreviationToBestLapTime() {
 
-        Stream startTimeData = Stream.of("AAA2018-05-24_12:00:00.000",
-                "BBB2018-05-24_12:10:00.000",
-                "CCC2018-05-24_12:15:00.000");
+        List<String> startTimeData = new ArrayList<>();
+        startTimeData.add("AAA2018-05-24_12:00:00.000");
+        startTimeData.add("BBB2018-05-24_12:10:00.000");
+        startTimeData.add("CCC2018-05-24_12:15:00.000");
 
-        Stream endTimeData = Stream.of("AAA2018-05-24_12:01:11.000",
-                "BBB2018-05-24_12:12:22.000",
-                "CCC2018-05-24_12:18:33.000");
+        List<String> endTimeData = new ArrayList<>();
+        endTimeData.add("AAA2018-05-24_12:01:11.000");
+        endTimeData.add("BBB2018-05-24_12:12:22.000");
+        endTimeData.add("CCC2018-05-24_12:18:33.000");
 
         LocalTime startTimeAAA = LocalTime.of(12, 00, 00, 0);
         LocalTime startTimeBBB = LocalTime.of(12, 10, 00, 0);
@@ -40,7 +42,7 @@ class BestLapCreatorImplTest {
 
         Map<String, Duration> actual = bestLapCreator.countBestLap(startTimeData, endTimeData);
 
-        assertThat(actual, is(expected));
+        assertThat(expected).isEqualTo(actual);
 
     }
 }

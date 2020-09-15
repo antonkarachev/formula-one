@@ -1,10 +1,10 @@
 package ru.karachev.formulaone.decryptor;
 
-import java.util.HashMap;
-import java.util.stream.Stream;
+import java.util.List;
+import java.util.Map;
 
 public interface AbbreviationDecryptor {
 
-    HashMap<String, String> decryptAbbreviation(Stream<String> dataFromFile);
+    Map<String, String> decryptAbbreviation(List<String> dataFromFile);
 
 }

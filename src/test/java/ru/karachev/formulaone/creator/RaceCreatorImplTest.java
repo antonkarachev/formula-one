@@ -5,37 +5,45 @@ import ru.karachev.formulaone.domain.Racer;
 
 import java.time.Duration;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class RaceCreatorImplTest {
 
-    RaceCreator raceCreator = new RaceCreatorImpl();
+    private final RaceCreator raceCreator = new RaceCreatorImpl();
 
     @Test
-    void createRaceShouldReturnMapPlaceToRacersSortedByPlace() {
+    void createRaceShouldReturnListOfRacersSortedByPlace() {
 
-        LocalTime startTimeAAA = LocalTime.of(12, 00, 00, 0);
-        LocalTime startTimeBBB = LocalTime.of(12, 10, 00, 0);
-        LocalTime startTimeCCC = LocalTime.of(12, 15, 00, 0);
-        LocalTime endTimeAAA = LocalTime.of(12, 01, 11, 111000000);
+        LocalTime startTimeAAA = LocalTime.of(12, 0, 0, 0);
+        LocalTime startTimeBBB = LocalTime.of(12, 10, 0, 0);
+        LocalTime startTimeCCC = LocalTime.of(12, 15, 0, 0);
+        LocalTime endTimeAAA = LocalTime.of(12, 1, 11, 111000000);
         LocalTime endTimeBBB = LocalTime.of(12, 12, 22, 222000000);
         LocalTime endTimeCCC = LocalTime.of(12, 18, 33, 333000000);
 
-        Racer racer1 = new Racer("AAA", "Anton",
-                "Best Team", Duration.between(startTimeAAA, endTimeAAA));
-        Racer racer2 = new Racer("BBB", "Donny",
-                "Not a best team", Duration.between(startTimeBBB, endTimeBBB));
-        Racer racer3 = new Racer("CCC", "Johny",
-                "Worst Team", Duration.between(startTimeCCC, endTimeCCC));
-
-        Map<Integer, Racer> expected = new HashMap<>();
-        expected.put(1, racer1);
-        expected.put(2, racer2);
-        expected.put(3, racer3);
+        Racer racer1 = Racer.newBuilder()
+                .withAbbreviation("AAA")
+                .withName("Anton")
+                .withTeamName("Best Team")
+                .withBestLapTime(Duration.between(startTimeAAA, endTimeAAA))
+                .build();
+        Racer racer2 = Racer.newBuilder()
+                .withAbbreviation("BBB")
+                .withName("Donny")
+                .withTeamName("Not a best team")
+                .withBestLapTime(Duration.between(startTimeBBB, endTimeBBB))
+                .build();
+        Racer racer3 = Racer.newBuilder()
+                .withAbbreviation("CCC")
+                .withName("Johny")
+                .withTeamName("Worst Team")
+                .withBestLapTime(Duration.between(startTimeCCC, endTimeCCC))
+                .build();
 
         Map<String, String> decryptedAbbreviation = new HashMap<>();
         decryptedAbbreviation.put("AAA", "Anton_Best Team");
@@ -47,9 +55,14 @@ class RaceCreatorImplTest {
         bestLapTime.put("BBB", Duration.between(startTimeBBB, endTimeBBB));
         bestLapTime.put("CCC", Duration.between(startTimeCCC, endTimeCCC));
 
-        Map<Integer, Racer> actual = raceCreator.createRace(decryptedAbbreviation, bestLapTime);
+        List<Racer> expected = new ArrayList<>();
+        expected.add(racer1);
+        expected.add(racer2);
+        expected.add(racer3);
 
-        assertThat(actual, is(expected));
+        List<Racer> actual = raceCreator.createRace(decryptedAbbreviation, bestLapTime);
+
+        assertThat(actual).isEqualTo(expected);
     }
 
 }

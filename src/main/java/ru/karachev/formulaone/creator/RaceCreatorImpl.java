@@ -3,9 +3,6 @@ package ru.karachev.formulaone.creator;
 import ru.karachev.formulaone.domain.Racer;
 
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -13,37 +10,32 @@ import java.util.stream.Collectors;
 public class RaceCreatorImpl implements RaceCreator {
 
     private static final String UNDERSCORE = "_";
+    private static final int PLACE_OF_NAME_IN_DESCRIPTION = 0;
+    private static final int PLACE_OF_TEAM_NAME_IN_DESCRIPTION = 1;
 
     @Override
-    public Map<Integer, Racer> createRace(Map<String, String> decryptedAbbreviation,
-                                          Map<String, Duration> bestLapTime) {
+    public List<Racer> createRace(Map<String, String> decryptedAbbreviation,
+                                  Map<String, Duration> bestLapTime) {
 
-        Map<String, Racer> abbreviationToRacer = decryptedAbbreviation.entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getKey,
-                        x -> new Racer(
-                                x.getKey(),
-                                getNameFromAbb(decryptedAbbreviation, x.getKey()),
-                                getTeamNameFromAbb(decryptedAbbreviation, x.getKey()),
-                                bestLapTime.get(x.getKey()))));
-
-        List<Racer> racersSortedByTime = new ArrayList<>(abbreviationToRacer.values());
-        racersSortedByTime.sort(Comparator.comparing(Racer::getBestLapTime));
-
-        return racersSortedByTime
-                .stream()
-                .collect(LinkedHashMap::new,
-                        (map, racer) -> map.put(map.size() + 1, racer),
-                        (map, map2) -> {
-                        });
+        return bestLapTime.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue())
+                .map(x -> Racer.newBuilder()
+                        .withAbbreviation(x.getKey())
+                        .withName(getNameFromAbbreviation(decryptedAbbreviation.get(x.getKey())))
+                        .withTeamName(getTeamNameFromAbbreviation(decryptedAbbreviation.get(x.getKey())))
+                        .withBestLapTime(x.getValue())
+                        .build())
+                .collect(Collectors.toList());
     }
 
-    public String getNameFromAbb(Map<String, String> decryptedAbbreviation,
-                                 String abbreviation) {
-        return decryptedAbbreviation.get(abbreviation).split(UNDERSCORE)[0];
+    private String getNameFromAbbreviation(String abbreviationLine) {
+
+        return abbreviationLine.split(UNDERSCORE)[PLACE_OF_NAME_IN_DESCRIPTION];
     }
 
-    public String getTeamNameFromAbb(Map<String, String> decryptedAbbreviation,
-                                     String abbreviation) {
-        return decryptedAbbreviation.get(abbreviation).split(UNDERSCORE)[1];
+    private String getTeamNameFromAbbreviation(String abbreviationLine) {
+
+        return abbreviationLine.split(UNDERSCORE)[PLACE_OF_TEAM_NAME_IN_DESCRIPTION];
     }
+
 }

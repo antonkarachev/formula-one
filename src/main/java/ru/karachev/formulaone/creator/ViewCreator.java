@@ -2,9 +2,9 @@ package ru.karachev.formulaone.creator;
 
 import ru.karachev.formulaone.domain.Racer;
 
-import java.util.Map;
+import java.util.List;
 
 public interface ViewCreator {
 
-    String createView(Map<Integer, Racer> racers);
+    String createView(List<Racer> racerSortedByPlace, int numberOfPrizes);
 }

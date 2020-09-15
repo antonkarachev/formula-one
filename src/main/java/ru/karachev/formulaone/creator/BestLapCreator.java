@@ -1,12 +1,12 @@
 package ru.karachev.formulaone.creator;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 public interface BestLapCreator {
 
-    Map<String, Duration> countBestLap(Stream<String> startTimeDataStream,
-                                       Stream<String> endTimeDataStream);
+    Map<String, Duration> countBestLap(List<String> startTimeDataStream,
+                                       List<String> endTimeDataStream);
 
 }

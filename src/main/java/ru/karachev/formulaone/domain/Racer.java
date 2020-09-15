@@ -10,15 +10,70 @@ public class Racer {
     private String teamName;
     private Duration bestLapTime;
 
-    public Racer(String abbreviation, String name, String teamName, Duration bestLapTime) {
-        this.abbreviation = abbreviation;
-        this.name = name;
-        this.teamName = teamName;
-        this.bestLapTime = bestLapTime;
+    private Racer (){
+
     }
 
     public Duration getBestLapTime() {
         return bestLapTime;
+    }
+
+    public String getTeamName() {
+        return teamName;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public static Builder newBuilder(){
+        return new Racer().new Builder();
+    }
+
+    public class Builder{
+
+        private Builder (){
+
+        }
+
+        public Builder withAbbreviation (String abbreviation){
+            Racer.this.abbreviation = abbreviation;
+            return this;
+        }
+
+        public Builder withName (String name) {
+            Racer.this.name = name;
+            return this;
+        }
+
+        public Builder withTeamName (String teamName){
+            Racer.this.teamName = teamName;
+            return this;
+        }
+
+        public Builder withBestLapTime (Duration bestLapTime){
+            Racer.this.bestLapTime = bestLapTime;
+            return this;
+        }
+
+        public Racer build(){
+            Racer racer = new Racer();
+            racer.abbreviation = Racer.this.abbreviation;
+            racer.name = Racer.this.name;
+            racer.teamName = Racer.this.teamName;
+            racer.bestLapTime = Racer.this.bestLapTime;
+            return racer;
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "Racer{" +
+                "abbreviation='" + abbreviation + '\'' +
+                ", name='" + name + '\'' +
+                ", teamName='" + teamName + '\'' +
+                ", bestLapTime=" + bestLapTime +
+                '}';
     }
 
     @Override
@@ -41,15 +96,4 @@ public class Racer {
         return Objects.hash(abbreviation, name, teamName, bestLapTime);
     }
 
-    public String getAbbreviation() {
-        return abbreviation;
-    }
-
-    public String getTeamName() {
-        return teamName;
-    }
-
-    public String getName() {
-        return name;
-    }
 }

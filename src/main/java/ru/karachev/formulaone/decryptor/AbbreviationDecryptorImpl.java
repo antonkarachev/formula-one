@@ -1,12 +1,13 @@
 package ru.karachev.formulaone.decryptor;
 
 import java.util.HashMap;
-import java.util.stream.Stream;
+import java.util.List;
+import java.util.Map;
 
 public class AbbreviationDecryptorImpl implements AbbreviationDecryptor {
 
     @Override
-    public HashMap<String, String> decryptAbbreviation(Stream<String> dataFromFile) {
+    public Map<String, String> decryptAbbreviation(List<String> dataFromFile) {
         HashMap<String, String> abbreviationToNameAndTeam = new HashMap<>();
 
         dataFromFile.forEach(line -> abbreviationToNameAndTeam

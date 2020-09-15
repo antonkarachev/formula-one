@@ -3,7 +3,8 @@ package ru.karachev.formulaone.creator;
 import ru.karachev.formulaone.domain.Racer;
 
 import java.time.Duration;
-import java.util.Map;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ViewCreatorImpl implements ViewCreator {
 
@@ -13,56 +14,27 @@ public class ViewCreatorImpl implements ViewCreator {
     private static final String NAME_FORMAT = "%-18s|";
     private static final String TEAM_FORMAT = "%-27s|";
     private static final String TIME_FORMAT = "%02d:%02d.%03d";
+    private static final int FIRST_PRIZE_PLACE = 1;
+    private static final int LINE_TO_SET_LENGTH = 1;
 
     @Override
-    public String createView(Map<Integer, Racer> racersToPlace) {
-
+    public String createView(List<Racer> racerSortedByPlace, int numberOfPrizes) {
         StringBuilder view = new StringBuilder();
+        AtomicInteger prizePlaces = new AtomicInteger(FIRST_PRIZE_PLACE);
 
-        view.append(NEW_LINE)
-                .append(firstStepViewMaker(racersToPlace));
-
-        int lineLength = view.toString().split(NEW_LINE)[1].length();
-
-        view.append(lineCreator(lineLength))
-                .append(secondStepViewMaker(racersToPlace));
+        racerSortedByPlace.forEach(racer -> {
+            if (prizePlaces.get() == numberOfPrizes + 1) {
+                int lineLength = view.toString().split(NEW_LINE)[LINE_TO_SET_LENGTH].length();
+                view.append(lineCreator(lineLength));
+            }
+            view.append(String.format(PLACE_FORMAT, prizePlaces.getAndIncrement()))
+                    .append(String.format(NAME_FORMAT, racer.getName()))
+                    .append(String.format(TEAM_FORMAT, racer.getTeamName()))
+                    .append(getTimeFromDuration(racer.getBestLapTime()))
+                    .append(NEW_LINE);
+        });
 
         return view.toString();
-    }
-
-    private String firstStepViewMaker(Map<Integer, Racer> racersToPlace) {
-        StringBuilder firstStepView = new StringBuilder();
-
-
-        racersToPlace.forEach((place, racer) -> {
-                    if (place <= 15) {
-                        firstStepView.append(String.format(PLACE_FORMAT, place))
-                                .append(String.format(NAME_FORMAT, racer.getName()))
-                                .append(String.format(TEAM_FORMAT, racer.getTeamName()))
-                                .append(getTimeFromDuration(racer.getBestLapTime()))
-                                .append(NEW_LINE);
-                    }
-                }
-        );
-        return firstStepView.toString();
-    }
-
-
-    private String secondStepViewMaker(Map<Integer, Racer> racersToPlace) {
-        StringBuilder secondStepView = new StringBuilder();
-
-        racersToPlace.forEach((place, racer) -> {
-                    if (place > 15) {
-                        secondStepView.append(String.format(PLACE_FORMAT, place))
-                                .append(String.format(NAME_FORMAT, racer.getName()))
-                                .append(String.format(TEAM_FORMAT, racer.getTeamName()))
-                                .append(getTimeFromDuration(racer.getBestLapTime()))
-                                .append(NEW_LINE);
-                    }
-                }
-        );
-
-        return secondStepView.toString();
     }
 
     private String getTimeFromDuration(Duration bestLapTime) {

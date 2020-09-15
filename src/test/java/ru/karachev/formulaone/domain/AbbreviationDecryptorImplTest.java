@@ -4,30 +4,30 @@ import org.junit.jupiter.api.Test;
 import ru.karachev.formulaone.decryptor.AbbreviationDecryptor;
 import ru.karachev.formulaone.decryptor.AbbreviationDecryptorImpl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class AbbreviationDecryptorImplTest {
 
     private final AbbreviationDecryptor abbreviationDecryptor = new AbbreviationDecryptorImpl();
 
     @Test
-    void decryptAbbreviationShouldReturnMapWhenGetStream() {
-        Stream<String> stream = Stream.of("AAK_Anton Karachev_BEST TEAM IN THE WORLD",
-                "AKR_dfsfds_TEAMTEAM");
+    void decryptAbbreviationShouldReturnMapWhenGetListOfStringsWithDataFromFile() {
+        List<String> data = new ArrayList<>();
+        data.add("AAK_Anton Karachev_BEST TEAM IN THE WORLD");
+        data.add("AKR_dfsfds_TEAMTEAM");
 
         Map<String, String> expected = new HashMap<>();
         expected.put("AAK", "Anton Karachev_BEST TEAM IN THE WORLD");
         expected.put("AKR", "dfsfds_TEAMTEAM");
 
-        Map<String, String> actual = abbreviationDecryptor.decryptAbbreviation(stream);
+        Map<String, String> actual = abbreviationDecryptor.decryptAbbreviation(data);
 
-        assertThat (actual, is(expected));
-        assertThat(actual.size(), is(2));
+        assertThat(actual).isEqualTo(expected);
 
     }
 
