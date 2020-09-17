@@ -46,5 +46,4 @@ class ValidatorTest {
         assertDoesNotThrow(() -> validator.validate(numberOfPrizes));
     }
 
-
 }

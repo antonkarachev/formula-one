@@ -9,7 +9,7 @@ import ru.karachev.formulaone.creator.ViewCreatorImpl;
 import ru.karachev.formulaone.decryptor.AbbreviationDecryptor;
 import ru.karachev.formulaone.decryptor.AbbreviationDecryptorImpl;
 import ru.karachev.formulaone.domain.FileReader;
-import ru.karachev.formulaone.domain.DataRepository;
+import ru.karachev.formulaone.domain.DataSource;
 import ru.karachev.formulaone.validator.Validator;
 import ru.karachev.formulaone.validator.ValidatorImpl;
 
@@ -28,7 +28,7 @@ public class FormulaOneApplication {
         BestLapCreator bestLapCreator = new BestLapCreatorImpl();
         RaceCreator raceCreator = new RaceCreatorImpl();
         ViewCreator viewCreator = new ViewCreatorImpl();
-        DataRepository dataRepository = DataRepository.builder()
+        DataSource dataSource = DataSource.builder()
                 .withStartLogFilePath(startLog)
                 .withEndLogFilePath(endLog)
                 .withAbbreviationsTxtFilePath(abbreviationsTxt)
@@ -39,7 +39,7 @@ public class FormulaOneApplication {
                 bestLapCreator, raceCreator, viewCreator);
 
 
-        System.out.println(reportMaker.makeReport(dataRepository));
+        System.out.println(reportMaker.makeReport(dataSource));
 
     }
 }

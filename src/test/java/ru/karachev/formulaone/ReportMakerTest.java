@@ -10,7 +10,7 @@ import ru.karachev.formulaone.creator.RaceCreator;
 import ru.karachev.formulaone.creator.ViewCreator;
 import ru.karachev.formulaone.decryptor.AbbreviationDecryptor;
 import ru.karachev.formulaone.domain.FileReader;
-import ru.karachev.formulaone.domain.DataRepository;
+import ru.karachev.formulaone.domain.DataSource;
 import ru.karachev.formulaone.domain.Racer;
 import ru.karachev.formulaone.validator.Validator;
 
@@ -66,7 +66,7 @@ class ReportMakerTest {
         String abbreviationsTxt = "abbreviations.txt";
         int numberOfPrizes = 3;
 
-        DataRepository dataRepository = DataRepository.builder()
+        DataSource dataSource = DataSource.builder()
                 .withStartLogFilePath(startLog)
                 .withEndLogFilePath(endLog)
                 .withAbbreviationsTxtFilePath(abbreviationsTxt)
@@ -148,7 +148,7 @@ class ReportMakerTest {
         when(mockedRaceCreator.createRace(anyMap(), anyMap())).thenReturn(placesToRacer);
         when(mockedViewCreator.createView(anyList(), anyInt())).thenReturn(expected);
 
-        String actual = reportMaker.makeReport(dataRepository);
+        String actual = reportMaker.makeReport(dataSource);
 
         assertThat(actual).isEqualTo(expected);
 
@@ -166,7 +166,7 @@ class ReportMakerTest {
         String abbreviationsTxt = "abbreviations.txt";
         int numberOfPrizes = 3;
 
-        DataRepository dataRepository = DataRepository.builder()
+        DataSource dataSource = DataSource.builder()
                 .withStartLogFilePath(startLog)
                 .withEndLogFilePath(endLog)
                 .withAbbreviationsTxtFilePath(abbreviationsTxt)
@@ -174,7 +174,7 @@ class ReportMakerTest {
                 .build();
         doThrow(new IllegalArgumentException()).when(mockedValidator).validate(anyString());
         assertThrows(IllegalArgumentException.class, () ->
-                reportMaker.makeReport(dataRepository));
+                reportMaker.makeReport(dataSource));
         verifyZeroInteractions(mockedFileReader, mockedAbbreviationDecryptor, mockedBestLapCounter,
                 mockedRaceCreator, mockedViewCreator);
     }

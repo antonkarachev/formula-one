@@ -10,8 +10,8 @@ import java.util.stream.Collectors;
 public class RaceCreatorImpl implements RaceCreator {
 
     private static final String UNDERSCORE = "_";
-    private static final int PLACE_OF_NAME_IN_DESCRIPTION = 0;
-    private static final int PLACE_OF_TEAM_NAME_IN_DESCRIPTION = 1;
+    private static final int PLACE_OF_NAME = 0;
+    private static final int PLACE_OF_TEAM_NAME = 1;
 
     @Override
     public List<Racer> createRace(Map<String, String> decryptedAbbreviation,
@@ -21,21 +21,15 @@ public class RaceCreatorImpl implements RaceCreator {
                 .sorted(Map.Entry.comparingByValue())
                 .map(x -> Racer.builder()
                         .withAbbreviation(x.getKey())
-                        .withName(getNameFromAbbreviation(decryptedAbbreviation.get(x.getKey())))
-                        .withTeamName(getTeamNameFromAbbreviation(decryptedAbbreviation.get(x.getKey())))
+                        .withName(getFromAbbreviation(PLACE_OF_NAME, decryptedAbbreviation.get(x.getKey())))
+                        .withTeamName(getFromAbbreviation(PLACE_OF_TEAM_NAME, decryptedAbbreviation.get(x.getKey())))
                         .withBestLapTime(x.getValue())
                         .build())
                 .collect(Collectors.toList());
     }
 
-    private String getNameFromAbbreviation(String abbreviationLine) {
-
-        return abbreviationLine.split(UNDERSCORE)[PLACE_OF_NAME_IN_DESCRIPTION];
-    }
-
-    private String getTeamNameFromAbbreviation(String abbreviationLine) {
-
-        return abbreviationLine.split(UNDERSCORE)[PLACE_OF_TEAM_NAME_IN_DESCRIPTION];
+    private String getFromAbbreviation(int placeOfWhatGet, String abbreviationLine) {
+        return abbreviationLine.split(UNDERSCORE)[placeOfWhatGet];
     }
 
 }

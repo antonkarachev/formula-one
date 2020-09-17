@@ -4,7 +4,7 @@ import ru.karachev.formulaone.creator.BestLapCreator;
 import ru.karachev.formulaone.creator.RaceCreator;
 import ru.karachev.formulaone.creator.ViewCreator;
 import ru.karachev.formulaone.decryptor.AbbreviationDecryptor;
-import ru.karachev.formulaone.domain.DataRepository;
+import ru.karachev.formulaone.domain.DataSource;
 import ru.karachev.formulaone.domain.FileReader;
 import ru.karachev.formulaone.domain.Racer;
 import ru.karachev.formulaone.validator.Validator;
@@ -34,12 +34,12 @@ public class ReportMaker {
         this.viewCreator = viewCreator;
     }
 
-    public String makeReport(DataRepository dataRepository) {
+    public String makeReport(DataSource dataSource) {
 
-        String startLog = dataRepository.getStartLogFilePath();
-        String endLog = dataRepository.getEndLogFilePath();
-        String abbreviationsTxt = dataRepository.getAbbreviationsTxtFilePath();
-        int numberOfPrizes = dataRepository.getNumberOfPrizes();
+        String startLog = dataSource.getStartLogFilePath();
+        String endLog = dataSource.getEndLogFilePath();
+        String abbreviationsTxt = dataSource.getAbbreviationsTxtFilePath();
+        int numberOfPrizes = dataSource.getNumberOfPrizes();
 
         validator.validate(startLog);
         validator.validate(endLog);

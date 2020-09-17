@@ -1,13 +1,13 @@
 package ru.karachev.formulaone.domain;
 
-public class DataRepository {
+public class DataSource {
 
     private final String startLogFilePath;
     private final String endLogFilePath;
     private final String abbreviationsTxtFilePath;
     private final int numberOfPrizes;
 
-    private DataRepository(Builder builder) {
+    private DataSource(Builder builder) {
         startLogFilePath = builder.startLogFilePath;
         endLogFilePath = builder.endLogFilePath;
         abbreviationsTxtFilePath = builder.abbreviationsTxtFilePath;
@@ -64,8 +64,8 @@ public class DataRepository {
             return this;
         }
 
-        public DataRepository build() {
-            return new DataRepository(this);
+        public DataSource build() {
+            return new DataSource(this);
         }
 
     }
