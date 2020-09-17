@@ -66,7 +66,7 @@ class ReportMakerTest {
         String abbreviationsTxt = "abbreviations.txt";
         int numberOfPrizes = 3;
 
-        DataRepository dataRepository = DataRepository.newBuilder()
+        DataRepository dataRepository = DataRepository.builder()
                 .withStartLogFilePath(startLog)
                 .withEndLogFilePath(endLog)
                 .withAbbreviationsTxtFilePath(abbreviationsTxt)
@@ -105,19 +105,19 @@ class ReportMakerTest {
         abbreviationToBestLapTime.put("BBB", Duration.between(startTimeBBB, endTimeBBB));
         abbreviationToBestLapTime.put("CCC", Duration.between(startTimeCCC, endTimeCCC));
 
-        Racer racer1 = Racer.newBuilder()
+        Racer racer1 = Racer.builder()
                 .withAbbreviation("AAA")
                 .withName("Anton")
                 .withTeamName("Best Team")
                 .withBestLapTime(Duration.between(startTimeAAA, endTimeAAA))
                 .build();
-        Racer racer2 = Racer.newBuilder()
+        Racer racer2 = Racer.builder()
                 .withAbbreviation("BBB")
                 .withName("Donny")
                 .withTeamName("Not a best team")
                 .withBestLapTime(Duration.between(startTimeBBB, endTimeBBB))
                 .build();
-        Racer racer3 = Racer.newBuilder()
+        Racer racer3 = Racer.builder()
                 .withAbbreviation("CCC")
                 .withName("Johny")
                 .withTeamName("Worst Team")
@@ -166,7 +166,7 @@ class ReportMakerTest {
         String abbreviationsTxt = "abbreviations.txt";
         int numberOfPrizes = 3;
 
-        DataRepository dataRepository = DataRepository.newBuilder()
+        DataRepository dataRepository = DataRepository.builder()
                 .withStartLogFilePath(startLog)
                 .withEndLogFilePath(endLog)
                 .withAbbreviationsTxtFilePath(abbreviationsTxt)

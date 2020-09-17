@@ -5,13 +5,20 @@ import java.util.Objects;
 
 public class Racer {
 
-    private String abbreviation;
-    private String name;
-    private String teamName;
-    private Duration bestLapTime;
+    private final String abbreviation;
+    private final String name;
+    private final String teamName;
+    private final Duration bestLapTime;
 
-    private Racer (){
+    private Racer(Builder builder) {
+        abbreviation = builder.abbreviation;
+        name = builder.name;
+        teamName = builder.teamName;
+        bestLapTime = builder.bestLapTime;
+    }
 
+    public static Builder builder() {
+        return new Builder();
     }
 
     public Duration getBestLapTime() {
@@ -24,46 +31,6 @@ public class Racer {
 
     public String getName() {
         return name;
-    }
-
-    public static Builder newBuilder(){
-        return new Racer().new Builder();
-    }
-
-    public class Builder{
-
-        private Builder (){
-
-        }
-
-        public Builder withAbbreviation (String abbreviation){
-            Racer.this.abbreviation = abbreviation;
-            return this;
-        }
-
-        public Builder withName (String name) {
-            Racer.this.name = name;
-            return this;
-        }
-
-        public Builder withTeamName (String teamName){
-            Racer.this.teamName = teamName;
-            return this;
-        }
-
-        public Builder withBestLapTime (Duration bestLapTime){
-            Racer.this.bestLapTime = bestLapTime;
-            return this;
-        }
-
-        public Racer build(){
-            Racer racer = new Racer();
-            racer.abbreviation = Racer.this.abbreviation;
-            racer.name = Racer.this.name;
-            racer.teamName = Racer.this.teamName;
-            racer.bestLapTime = Racer.this.bestLapTime;
-            return racer;
-        }
     }
 
     @Override
@@ -94,6 +61,41 @@ public class Racer {
     @Override
     public int hashCode() {
         return Objects.hash(abbreviation, name, teamName, bestLapTime);
+    }
+
+    public static class Builder {
+
+        private String abbreviation;
+        private String name;
+        private String teamName;
+        private Duration bestLapTime;
+
+        private Builder() {
+        }
+
+        public Builder withAbbreviation(String abbreviation) {
+            this.abbreviation = abbreviation;
+            return this;
+        }
+
+        public Builder withName(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public Builder withTeamName(String teamName) {
+            this.teamName = teamName;
+            return this;
+        }
+
+        public Builder withBestLapTime(Duration bestLapTime) {
+            this.bestLapTime = bestLapTime;
+            return this;
+        }
+
+        public Racer build() {
+            return new Racer(this);
+        }
     }
 
 }

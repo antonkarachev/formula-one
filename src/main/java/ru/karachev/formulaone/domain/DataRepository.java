@@ -2,17 +2,20 @@ package ru.karachev.formulaone.domain;
 
 public class DataRepository {
 
-    private String startLogFilePath;
-    private String endLogFilePath;
-    private String abbreviationsTxtFilePath;
-    private int numberOfPrizes;
+    private final String startLogFilePath;
+    private final String endLogFilePath;
+    private final String abbreviationsTxtFilePath;
+    private final int numberOfPrizes;
 
-    private DataRepository() {
-
+    private DataRepository(Builder builder) {
+        startLogFilePath = builder.startLogFilePath;
+        endLogFilePath = builder.endLogFilePath;
+        abbreviationsTxtFilePath = builder.abbreviationsTxtFilePath;
+        numberOfPrizes = builder.numberOfPrizes;
     }
 
-    public static Builder newBuilder() {
-        return new DataRepository().new Builder();
+    public static Builder builder() {
+        return new Builder();
     }
 
     public String getStartLogFilePath() {
@@ -31,39 +34,38 @@ public class DataRepository {
         return numberOfPrizes;
     }
 
-    public class Builder {
+    public static class Builder {
+
+        private String startLogFilePath;
+        private String endLogFilePath;
+        private String abbreviationsTxtFilePath;
+        private int numberOfPrizes;
 
         private Builder() {
-
         }
 
         public Builder withStartLogFilePath(String startLogFilePath) {
-            DataRepository.this.startLogFilePath = startLogFilePath;
+            this.startLogFilePath = startLogFilePath;
             return this;
         }
 
         public Builder withEndLogFilePath(String endLogFilePath) {
-            DataRepository.this.endLogFilePath = endLogFilePath;
+            this.endLogFilePath = endLogFilePath;
             return this;
         }
 
         public Builder withAbbreviationsTxtFilePath(String abbreviationsTxtFilePath) {
-            DataRepository.this.abbreviationsTxtFilePath = abbreviationsTxtFilePath;
+            this.abbreviationsTxtFilePath = abbreviationsTxtFilePath;
             return this;
         }
 
         public Builder withNumberOfPrizes(int numberOfPrizes) {
-            DataRepository.this.numberOfPrizes = numberOfPrizes;
+            this.numberOfPrizes = numberOfPrizes;
             return this;
         }
 
-        public DataRepository build(){
-            DataRepository dataRepository = new DataRepository();
-            dataRepository.startLogFilePath = DataRepository.this.startLogFilePath;
-            dataRepository.endLogFilePath = DataRepository.this.endLogFilePath;
-            dataRepository.abbreviationsTxtFilePath = DataRepository.this.abbreviationsTxtFilePath;
-            dataRepository.numberOfPrizes = DataRepository.this.numberOfPrizes;
-            return dataRepository;
+        public DataRepository build() {
+            return new DataRepository(this);
         }
 
     }

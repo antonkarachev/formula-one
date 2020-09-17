@@ -28,7 +28,7 @@ public class FormulaOneApplication {
         BestLapCreator bestLapCreator = new BestLapCreatorImpl();
         RaceCreator raceCreator = new RaceCreatorImpl();
         ViewCreator viewCreator = new ViewCreatorImpl();
-        DataRepository dataRepository = DataRepository.newBuilder()
+        DataRepository dataRepository = DataRepository.builder()
                 .withStartLogFilePath(startLog)
                 .withEndLogFilePath(endLog)
                 .withAbbreviationsTxtFilePath(abbreviationsTxt)

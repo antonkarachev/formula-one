@@ -31,8 +31,7 @@ public class ViewCreatorImpl implements ViewCreator {
                     .append(String.format(NAME_FORMAT, racer.getName()))
                     .append(String.format(TEAM_FORMAT, racer.getTeamName()))
                     .append(getTimeFromDuration(racer.getBestLapTime()))
-                    .append(NEW_LINE);
-        });
+                    .append(NEW_LINE); });
 
         return view.toString();
     }

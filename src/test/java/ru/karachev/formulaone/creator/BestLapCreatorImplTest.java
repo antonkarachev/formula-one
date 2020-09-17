@@ -28,10 +28,10 @@ class BestLapCreatorImplTest {
         endTimeData.add("BBB2018-05-24_12:12:22.000");
         endTimeData.add("CCC2018-05-24_12:18:33.000");
 
-        LocalTime startTimeAAA = LocalTime.of(12, 00, 00, 0);
-        LocalTime startTimeBBB = LocalTime.of(12, 10, 00, 0);
-        LocalTime startTimeCCC = LocalTime.of(12, 15, 00, 0);
-        LocalTime endTimeAAA = LocalTime.of(12, 01, 11, 0);
+        LocalTime startTimeAAA = LocalTime.of(12, 0, 0, 0);
+        LocalTime startTimeBBB = LocalTime.of(12, 10, 0, 0);
+        LocalTime startTimeCCC = LocalTime.of(12, 15, 0, 0);
+        LocalTime endTimeAAA = LocalTime.of(12, 1, 11, 0);
         LocalTime endTimeBBB = LocalTime.of(12, 12, 22, 0);
         LocalTime endTimeCCC = LocalTime.of(12, 18, 33, 0);
 

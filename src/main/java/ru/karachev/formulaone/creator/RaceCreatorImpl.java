@@ -19,7 +19,7 @@ public class RaceCreatorImpl implements RaceCreator {
 
         return bestLapTime.entrySet().stream()
                 .sorted(Map.Entry.comparingByValue())
-                .map(x -> Racer.newBuilder()
+                .map(x -> Racer.builder()
                         .withAbbreviation(x.getKey())
                         .withName(getNameFromAbbreviation(decryptedAbbreviation.get(x.getKey())))
                         .withTeamName(getTeamNameFromAbbreviation(decryptedAbbreviation.get(x.getKey())))
