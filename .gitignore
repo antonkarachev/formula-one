@@ -1,6 +1,4 @@
 .idea
 *.iml
-*.log
 out
 target
-*.txt
